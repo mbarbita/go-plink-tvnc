@@ -3,47 +3,63 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
-	"net/http"
+	"os"
 	"os/exec"
 	"strings"
 	"time"
 
-	"github.com/mbarbita/golib-cfgutils"
+	cfgutils "github.com/mbarbita/golib-cfgutils"
 )
 
 func checkStatus() {
-	i := 1
-	for {
-		res, err := http.Get("http://example.com/info.txt")
+	// i := 1
+	// for {
+	// 	res, err := http.Get("http://example.com/info.txt")
+	//
+	// 	if err == nil {
+	// 		// log.Fatal(err)
+	// 		body, err := ioutil.ReadAll(res.Body)
+	// 		res.Body.Close()
+	// 		if err != nil {
+	// 			// log.Fatal(err)
+	// 			log.Println("body err:", err)
+	// 		}
+	// 		fmt.Printf("body: %s", body)
+	// 		fmt.Println("byte 0,1:", body[0], body[1])
+	// 		// fmt.Println("byte 0,1:", body...)
+	// 	}
+	//
+	// 	if err != nil {
+	// 		log.Println("get err:", err)
+	//
+	// 	}
+	//
+	// 	log.Println("Sleeping...", i)
+	// 	time.Sleep(30 * time.Second)
+	// 	i++
+	// }
+}
 
-		if err == nil {
-			// log.Fatal(err)
-			body, err := ioutil.ReadAll(res.Body)
-			res.Body.Close()
-			if err != nil {
-				// log.Fatal(err)
-				log.Println("body err:", err)
-			}
-			fmt.Printf("body: %s", body)
-			fmt.Println("byte 0,1:", body[0], body[1])
-			// fmt.Println("byte 0,1:", body...)
-		}
-
-		if err != nil {
-			log.Println("get err:", err)
-
-		}
-
-		log.Println("Sleeping...", i)
-		time.Sleep(30 * time.Second)
-		i++
+func clearscreen() {
+	opSys := cfgMap["os"]
+	switch opSys {
+	case "windows":
+		//Windows
+		c := exec.Command("cmd", "/c", "cls")
+		c.Stdout = os.Stdout
+		c.Run()
+	case "linux":
+		//linux
+		cmd := exec.Command("clear") //Linux example, its tested
+		cmd.Stdout = os.Stdout
+		cmd.Run()
 	}
 }
 
 func echo() {
+	time.Sleep(10 * time.Second)
 	i := 1
 	for {
 	loop:
@@ -74,18 +90,23 @@ func echo() {
 				fmt.Println()
 				break
 			}
-			fmt.Printf("conn read status: %v", status)
+			t := time.Now()
+			fmt.Printf("%v last conn read status: %v\r", t.Format(time.Stamp), status[:len(status)-1])
 			time.Sleep(30 * time.Second)
 			// ...
 		}
 	}
 }
 
+var cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
+
 func main() {
+	clearscreen()
+	if cfgMap["echo"] == "on" {
+		go echo()
+	}
 
 	fmt.Println("Starting...")
-
-	cfgMap := cfgutils.ReadCfgFile("cfg.ini", false)
 
 	cmd := cfgMap["cmd"]
 	fields := strings.Split(strings.TrimSpace(cfgMap["arg"]), " ")
@@ -95,9 +116,16 @@ func main() {
 		fmt.Print(s + " ")
 	}
 	fmt.Println()
-	go echo()
+
+	// time.Sleep(10 * time.Second)
+	// for j := 10; j > 0; j-- {
+	// 	fmt.Printf("continue in: %2v\r", j)
+	// 	time.Sleep(1 * time.Second)
+	// }
+
 	i := 1
 	for {
+		clearscreen()
 		log.Println("plink connecting...", i)
 		command := exec.Command(cmd, fields...)
 		err := command.Start()
