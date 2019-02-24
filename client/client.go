@@ -82,6 +82,7 @@ func echo() {
 			fmt.Fprintf(conn, "bzzz\n")
 			status, err := bufio.NewReader(conn).ReadString('\n')
 			if err != nil {
+				fmt.Println()
 				fmt.Println("conn read err:", err)
 				for j := 10; j > 0; j-- {
 					fmt.Printf("conn reconnecting in: %2v\r", j)
