@@ -13,35 +13,6 @@ import (
 	cfgutils "github.com/mbarbita/golib-cfgutils"
 )
 
-func checkStatus() {
-	// i := 1
-	// for {
-	// 	res, err := http.Get("http://example.com/info.txt")
-	//
-	// 	if err == nil {
-	// 		// log.Fatal(err)
-	// 		body, err := ioutil.ReadAll(res.Body)
-	// 		res.Body.Close()
-	// 		if err != nil {
-	// 			// log.Fatal(err)
-	// 			log.Println("body err:", err)
-	// 		}
-	// 		fmt.Printf("body: %s", body)
-	// 		fmt.Println("byte 0,1:", body[0], body[1])
-	// 		// fmt.Println("byte 0,1:", body...)
-	// 	}
-	//
-	// 	if err != nil {
-	// 		log.Println("get err:", err)
-	//
-	// 	}
-	//
-	// 	log.Println("Sleeping...", i)
-	// 	time.Sleep(30 * time.Second)
-	// 	i++
-	// }
-}
-
 func clearscreen() {
 	opSys := cfgMap["os"]
 	switch opSys {
@@ -52,7 +23,7 @@ func clearscreen() {
 		c.Run()
 	case "linux":
 		//linux
-		cmd := exec.Command("clear") //Linux example, its tested
+		cmd := exec.Command("clear")
 		cmd.Stdout = os.Stdout
 		cmd.Run()
 	}
@@ -69,7 +40,7 @@ func echo() {
 			// handle error
 			fmt.Println("echo dial err:", err)
 			// time.Sleep(10*time.Second)
-			for j := 10; j > 0; j-- {
+			for j := 30; j > 0; j-- {
 				fmt.Printf("echo dial reconnecting in: %2v\r", j)
 				time.Sleep(1 * time.Second)
 			}
@@ -84,7 +55,7 @@ func echo() {
 			if err != nil {
 				fmt.Println()
 				fmt.Println("conn read err:", err)
-				for j := 10; j > 0; j-- {
+				for j := 30; j > 0; j-- {
 					fmt.Printf("conn reconnecting in: %2v\r", j)
 					time.Sleep(1 * time.Second)
 				}
@@ -111,18 +82,12 @@ func main() {
 
 	cmd := cfgMap["cmd"]
 	fields := strings.Split(strings.TrimSpace(cfgMap["arg"]), " ")
-	fmt.Println("command:", cmd)
-	fmt.Println("args:")
-	for _, s := range fields {
-		fmt.Print(s + " ")
-	}
-	fmt.Println()
-
-	// time.Sleep(10 * time.Second)
-	// for j := 10; j > 0; j-- {
-	// 	fmt.Printf("continue in: %2v\r", j)
-	// 	time.Sleep(1 * time.Second)
+	// fmt.Println("command:", cmd)
+	// fmt.Println("args:")
+	// for _, s := range fields {
+	// fmt.Print(s + " ")
 	// }
+	// fmt.Println()
 
 	i := 1
 	for {
@@ -131,10 +96,8 @@ func main() {
 		command := exec.Command(cmd, fields...)
 		err := command.Start()
 		if err != nil {
-			// log.Fatal(err)
 			log.Println("plink command start error:", err)
 		}
-
 		log.Println("waiting for plink command to finish...")
 		err = command.Wait()
 		log.Printf("command plink finished with error: %v\n", err)
