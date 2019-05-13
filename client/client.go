@@ -70,11 +70,14 @@ func echo() {
 	}
 }
 
-var cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
+// var cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
+var cfgMap map[string]string
 
 func main() {
 	clearscreen()
 	fmt.Println("Starting...")
+
+	cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
 
 	cmd := cfgMap["cmd"]
 	fields := strings.Split(strings.TrimSpace(cfgMap["arg"]), " ")
