@@ -70,15 +70,14 @@ func echo() {
 	}
 }
 
-var cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
+// var cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
+var cfgMap map[string]string
 
 func main() {
 	clearscreen()
-	if cfgMap["echo"] == "on" {
-		go echo()
-	}
-
 	fmt.Println("Starting...")
+
+	cfgMap = cfgutils.ReadCfgFile("cfg.ini", false)
 
 	cmd := cfgMap["cmd"]
 	fields := strings.Split(strings.TrimSpace(cfgMap["arg"]), " ")
@@ -89,8 +88,13 @@ func main() {
 	// }
 	// fmt.Println()
 
-	i := 1
-	for {
+	if cfgMap["echo"] == "on" {
+		go echo()
+	}
+	time.Sleep(5 * time.Second)
+
+	// i := 1
+	for i := 1; ; i++ {
 		clearscreen()
 		log.Println("plink connecting...", i)
 		command := exec.Command(cmd, fields...)
@@ -102,7 +106,7 @@ func main() {
 		err = command.Wait()
 		log.Printf("command plink finished with error: %v\n", err)
 
-		i++
+		// i++
 		for j := 10; j > 0; j-- {
 			fmt.Printf("reconnecting in: %2v\r", j)
 			time.Sleep(1 * time.Second)
